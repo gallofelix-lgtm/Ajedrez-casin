@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granja de Minería</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #121212; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 15px; }
+        h1 { color: #00b0ff; margin-bottom: 10px; font-size: 20px; text-align: center; }
+        .panel { background: #1e1e1e; padding: 12px; border-radius: 8px; width: 100%; max-width: 320px; text-align: center; margin-bottom: 15px; font-size: 15px; }
+        .coins { color: #ffd700; font-weight: bold; }
+        .card { background: #1a1a1a; border: 1px solid #00b0ff; padding: 12px; border-radius: 8px; width: 100%; max-width: 320px; margin-bottom: 10px; text-align: center; }
+        
+        .minero-container { font-size: 32px; display: inline-block; margin-bottom: 5px; }
+        .pica-anim { animation: escavar 0.6s infinite ease-in-out; }
+        @keyframes escavar {
+            0% { transform: rotate(0deg) translateY(0); }
+            30% { transform: rotate(-35deg) translateY(-3px); }
+            50% { transform: rotate(25deg) translateY(2px); }
+            100% { transform: rotate(0deg) translateY(0); }
+        }
+
+        button { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; background: #00b0ff; color: #000; width: 100%; margin-top: 5px; }
+        .back { background: #333; color: #fff; text-decoration: none; padding: 10px; border-radius: 5px; display: block; text-align: center; width: 100%; max-width: 320px; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>⛏️ Mina de Bots Mineros</h1>
+
+    <div class="panel">
+        Monedas: <span class="coins" id="myCoins">0 🪙</span><br>
+        Generando: <span class="coins" id="gps">0</span> 🪙/s
+    </div>
+
+    <div class="card">
+        <div class="minero-container" id="icon1">⛏️🤖</div>
+        <p><b>Minero Júnior</b> (1 🪙/s)</p>
+        <p style="font-size: 12px; color: #aaa;">Contratados: <span id="c1">0</span></p>
+        <button onclick="comprar(1, 50, 1)">Contratar (50 🪙)</button>
+    </div>
+
+    <div class="card">
+        <div class="minero-container" id="icon2">⛏️⚡</div>
+        <p><b>Minero Pro</b> (5 🪙/s)</p>
+        <p style="font-size: 12px; color: #aaa;">Contratados: <span id="c2">0</span></p>
+        <button onclick="comprar(2, 250, 5)">Contratar (250 🪙)</button>
+    </div>
+
+    <a href="index.html" class="back">Volver al Menú Central</a>
+
+    <script>
+        let coins = parseInt(localStorage.getItem('coins')) || 100;
+        let gps = parseInt(localStorage.getItem('gps')) || 0;
+        let bots = JSON.parse(localStorage.getItem('bots')) || {1: 0, 2: 0};
+
+        function sonidoImpacto() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                let gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        function actualizar() {
+            document.getElementById('myCoins').textContent = `${coins} 🪙`;
+            document.getElementById('gps').textContent = gps;
+            document.getElementById('c1').textContent = bots[1];
+            document.getElementById('c2').textContent = bots[2];
+
+            if (bots[1] > 0) document.getElementById('icon1').classList.add('pica-anim');
+            if (bots[2] > 0) document.getElementById('icon2').classList.add('pica-anim');
+        }
+
+        function comprar(id, costo, prod) {
+            if (coins < costo) return alert("No tienes suficientes monedas");
+            coins -= costo;
+            gps += prod;
+            bots[id]++;
+            
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('gps', gps);
+            localStorage.setItem('bots', JSON.stringify(bots));
+            sonidoImpacto();
+            actualizar();
+        }
+
+        setInterval(() => {
+            if (gps > 0) {
+                coins += gps;
+                localStorage.setItem('coins', coins);
+                actualizar();
+                sonidoImpacto();
+            }
+        }, 1000);
+
+        actualizar();
+    </script>
+</body>
+</html>

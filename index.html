@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Central</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #121212; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
+        h1 { color: #00e676; margin-bottom: 10px; font-size: 22px; text-align: center; }
+        .panel { background: #1e1e1e; padding: 15px; border-radius: 8px; width: 100%; max-width: 320px; text-align: center; margin-bottom: 20px; font-size: 16px; border: 1px solid #333; }
+        .coins { color: #ffd700; font-weight: bold; }
+        .menu { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; }
+        .btn { padding: 14px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; text-decoration: none; text-align: center; display: block; }
+        .btn-chess { background: #00e676; color: #000; }
+        .btn-casino { background: #ff9100; color: #000; }
+        .btn-mine { background: #00b0ff; color: #000; }
+    </style>
+</head>
+<body>
+
+    <h1>🎮 Arcade Multijuegos</h1>
+
+    <div class="panel">
+        Tus Monedas: <span class="coins" id="globalCoins">100 🪙</span><br>
+        <span style="font-size: 12px; color: #aaa;" id="globalGps">Producción: 0 🪙/s</span>
+    </div>
+
+    <div class="menu">
+        <a href="ajedrez.html" class="btn btn-chess">♟️ Jugar Ajedrez</a>
+        <a href="casino.html" class="btn btn-casino">🎰 Tragaperras</a>
+        <a href="mineria.html" class="btn btn-mine">🤖 Minería Automática</a>
+    </div>
+
+    <!-- Pie de página con los derechos de autor -->
+    <footer style="margin-top: 30px; text-align: center; font-size: 11px; color: #666;">
+        &copy; 2026 Arcade Multijuegos. Todos los derechos reservados Felix Esteban Gallo Lizcano.
+    </footer>
+
+    <script>
+        let coins = parseInt(localStorage.getItem('coins')) || 100;
+        let gps = parseInt(localStorage.getItem('gps')) || 0;
+
+        document.getElementById('globalCoins').textContent = `${coins} 🪙`;
+        document.getElementById('globalGps').textContent = `Producción: ${gps} 🪙/s`;
+
+        // Genera monedas pasivas incluso desde el menú principal
+        setInterval(() => {
+            if (gps > 0) {
+                coins += gps;
+                localStorage.setItem('coins', coins);
+                document.getElementById('globalCoins').textContent = `${coins} 🪙`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
